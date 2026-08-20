@@ -235,7 +235,6 @@ const appConfig = defineConfig({
                     fs.copyFileSync('./assets/manifest.json', './dist/manifest.json')
                     fs.copyFileSync('./assets/config.html', './dist/config.html')
                     fs.copyFileSync('./assets/debug-inputs.html', './dist/debug-inputs.html')
-                    fs.copyFileSync('./assets/loading-bg.jpg', './dist/loading-bg.jpg')
                     fs.copyFileSync('./assets/mojangles.ttf', './dist/mojangles.ttf')
                     if (fs.existsSync('./assets/release.json')) {
                         fs.copyFileSync('./assets/release.json', './dist/release.json')
@@ -301,7 +300,6 @@ const appConfig = defineConfig({
 
                             const resizedImage = (await (sharp('./assets/favicon.png') as any).resize(64).toBuffer()).toString('base64')
                             html = html.replace('favicon.png', `data:image/png;base64,${resizedImage}`)
-                            html = html.replace('src="./loading-bg.jpg"', `src="data:image/png;base64,${fs.readFileSync('./assets/loading-bg.jpg', 'base64')}"`)
                             html += '<script id="mesher-worker-code">' + fs.readFileSync('./dist/mesher.js', 'utf8') + '</script>'
                             fs.writeFileSync(singleBuildHtml, html, 'utf8')
                             // write output file size

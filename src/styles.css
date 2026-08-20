@@ -227,10 +227,6 @@ body {
   animation-timing-function: ease-in-out;
   animation-fill-mode: forwards;
 }
-body::xr-overlay #viewer-canvas {
-  display: none;
-}
-
 .full-svg svg {
   width: 100%;
   height: 100%;
