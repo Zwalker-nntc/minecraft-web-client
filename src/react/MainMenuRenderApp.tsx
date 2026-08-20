@@ -9,6 +9,9 @@ import { openFilePicker, copyFilesAsync, mkdirRecursive, openWorldDirectory, rem
 
 import { hadModsActivated } from '../clientMods'
 import MainMenu from './MainMenu'
+import Screen from './Screen'
+import Input from './Input'
+import Button from './Button'
 import { withInjectableUi } from './extendableSystem'
 
 const isMainMenu = () => {
@@ -72,6 +75,36 @@ export const mainMenuState = proxy({
   serviceWorkerLoaded: false,
 })
 
+const ZteppaJoinScreen = ({ onBack, onJoin }: { onBack: () => void, onJoin: (username: string) => void }) => {
+  const [username, setUsername] = useState('')
+
+  return <Screen title='Join Zteppa' backdrop>
+    <form
+      style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}
+      onSubmit={(event) => {
+        event.preventDefault()
+        const trimmedUsername = username.trim()
+        if (trimmedUsername) onJoin(trimmedUsername)
+      }}
+    >
+      <label style={{ fontSize: 12, color: 'lightgray' }} htmlFor='zteppa-username'>Minecraft Username</label>
+      <Input
+        id='zteppa-username'
+        required
+        autoFocus
+        value={username}
+        onChange={({ target: { value } }) => setUsername(value)}
+        maxLength={16}
+        pattern='[A-Za-z0-9_]{3,16}'
+      />
+      <div style={{ display: 'flex', gap: 4, marginTop: 4 }}>
+        <Button type='button' onClick={onBack}>Back</Button>
+        <Button type='submit'>Join Zteppa</Button>
+      </div>
+    </form>
+  </Screen>
+}
+
 // todo clean
 let disableAnimation = false
 const MainMenuRenderAppBase = () => {
@@ -87,6 +120,7 @@ const MainMenuRenderAppBase = () => {
 
   const [versionStatus, setVersionStatus] = useState('')
   const [versionTitle, setVersionTitle] = useState('')
+  const [showZteppaJoinScreen, setShowZteppaJoinScreen] = useState(false)
 
   useEffect(() => {
     if (process.env.SINGLE_FILE_BUILD_MODE) {
@@ -132,34 +166,24 @@ const MainMenuRenderAppBase = () => {
             ease: 'easeInOut'
           }}
         >
-          <MainMenu
-            singleplayerAvailable={singleplayerAvailable}
-            connectToServerAction={() => showModal({ reactType: 'serversList' })}
-            singleplayerAction={async () => {
-              showModal({ reactType: 'singleplayer' })
-            }}
-            githubAction={() => openGithub()}
-            optionsAction={() => openOptionsMenu('main')}
-            bottomRightLinks={process.env.MAIN_MENU_LINKS}
-            openFileAction={e => {
-              if (!!window.showDirectoryPicker && !e.shiftKey) {
-                void openWorldDirectory()
-              } else {
-                openFilePicker()
-              }
-            }}
-            mapsProvider={mapsProviderUrl?.toString()}
-            versionStatus={versionStatus}
-            versionTitle={versionTitle}
-            onVersionStatusClick={async () => {
-              setVersionStatus('(reloading)')
-              await refreshApp()
-            }}
-            onVersionTextClick={async () => {
-              openGithub(process.env.RELEASE_LINK)
-            }}
-            versionText={process.env.RELEASE_TAG}
-          />
+          {showZteppaJoinScreen
+            ? <ZteppaJoinScreen
+              onBack={() => setShowZteppaJoinScreen(false)}
+              onJoin={(username) => {
+                dispatchEvent(new CustomEvent('connect', {
+                  detail: {
+                    server: 'Zteppasmp.net',
+                    username,
+                    botVersion: '1.21.11',
+                    ignoreQs: true,
+                  }
+                }))
+              }}
+            />
+            : <MainMenu
+              joinZteppaAction={() => setShowZteppaJoinScreen(true)}
+              optionsAction={() => openOptionsMenu('main')}
+            />}
         </motion.div>
       )}
     </AnimatePresence>
