@@ -209,6 +209,11 @@ const appConfig = defineConfig({
         // },
         proxy: {
             '/api': 'http://localhost:8080',
+            '/mesher.js': 'http://localhost:8080',
+            '/mesher.js.map': 'http://localhost:8080',
+            '/mesherWasm.js': 'http://localhost:8080',
+            '/threeWorker.js': 'http://localhost:8080',
+            '/wasm_mesher_bg.wasm': 'http://localhost:8080',
         },
     },
     plugins: [

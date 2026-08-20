@@ -57,6 +57,9 @@ app.get('/config.json', (req, res, next) => {
     ...publicConfig,
   })
 })
+if (!isProd) {
+  app.use(express.static(path.join(__dirname, './dist')))
+}
 if (isProd) {
   // add headers to enable shared array buffer
   app.use((req, res, next) => {
