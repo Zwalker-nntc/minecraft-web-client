@@ -208,7 +208,10 @@ const appConfig = defineConfig({
         //     name: 'assets',
         // },
         proxy: {
-            '/api': 'http://localhost:8080',
+            '/api': {
+                target: 'http://localhost:8080',
+                ws: true,
+            },
             '/mesher.js': 'http://localhost:8080',
             '/mesher.js.map': 'http://localhost:8080',
             '/mesherWasm.js': 'http://localhost:8080',
